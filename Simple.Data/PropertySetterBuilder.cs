@@ -368,7 +368,10 @@ namespace Simple.Data
             where T : struct 
         {
             if (ReferenceEquals(source, null)) return default(T?);
-            return (T) source;
+            if (source is T) return source as T?;
+
+            if (source is string && typeof(T) == typeof(Guid)) return TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(source.ToString()) as T?;
+            return Convert.ChangeType(source, typeof(T)) as T?;
         }
 
         private static T[] CreateArray<T>(object source)
